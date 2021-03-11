@@ -63,9 +63,9 @@ struct E{
     }
 };
 
-M_UTIL_COMPOSE(Append, append, push_back, push)
+M_UTIL_ABSTRACT(Append, append, push_back, push)
 
-M_UTIL_COMPOSE(Print, print, Log, log, OutMessage, println)
+M_UTIL_ABSTRACT(Print, print, Log, log, OutMessage, println)
 
 template<typename T>
 void test(T t){

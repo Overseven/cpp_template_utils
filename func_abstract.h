@@ -61,7 +61,7 @@ has_##FuncName <ClassName>::value
 #define GET_TAIL(Head, ...) __VA_ARGS__
 
 // Main macros
-#define M_UTIL_COMPOSE(FuncName, ...) \
+#define M_UTIL_ABSTRACT(FuncName, ...) \
 FOR_EACH(M_UTIL_HASFUNCSTRUCT, __VA_ARGS__)                            \
 FOR_EACH(M_UTIL_HELPERFUNC, __VA_ARGS__)                               \
                                                                        \
