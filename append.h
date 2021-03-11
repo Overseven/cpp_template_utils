@@ -5,6 +5,7 @@
 #ifndef META_UTILS_APPEND_H
 #define META_UTILS_APPEND_H
 
+
 #define M_UTIL_HELPERFUNC(FuncName)                             \
 template<typename Cont, typename T>                             \
 auto func_helper_##FuncName (Cont& container, const T& val){    \
@@ -23,9 +24,6 @@ auto func_helper_##FuncName (Cont& container, const T& val){ \
         return container.FuncName(val); \
     } \
 }
-
-#define M_UTIL_HELP_F(FuncName) \
-func_helper_##FuncName
 
 
 #define M_UTIL_HASFUNCSTRUCT(FuncName)                  \
@@ -46,56 +44,51 @@ public:                                                 \
 has_##FuncName <ClassName>::value
 
 
-#define FOR_EACH_1(what, x, ...) what(x)
-#define FOR_EACH_2(what, x, ...)\
-  what(x)\
-  FOR_EACH_1(what,  __VA_ARGS__);
-#define FOR_EACH_3(what, x, ...)\
-  what(x)\
-  FOR_EACH_2(what, __VA_ARGS__);
-#define FOR_EACH_4(what, x, ...)\
-  what(x)\
-  FOR_EACH_3(what,  __VA_ARGS__);
-#define FOR_EACH_5(what, x, ...)\
-  what(x)\
- FOR_EACH_4(what,  __VA_ARGS__);
-#define FOR_EACH_6(what, x, ...)\
-  what(x)\
-  FOR_EACH_5(what,  __VA_ARGS__);
-#define FOR_EACH_7(what, x, ...)\
-  what(x)\
-  FOR_EACH_6(what,  __VA_ARGS__);
-#define FOR_EACH_8(what, x, ...)\
-  what(x)\
-  FOR_EACH_7(what,  __VA_ARGS__);
+// Make a FOREACH macro
+#define FE_0(WHAT)
+#define FE_1(WHAT, X) WHAT(X)
+#define FE_2(WHAT, X, ...) WHAT(X)FE_1(WHAT, __VA_ARGS__)
+#define FE_3(WHAT, X, ...) WHAT(X)FE_2(WHAT, __VA_ARGS__)
+#define FE_4(WHAT, X, ...) WHAT(X)FE_3(WHAT, __VA_ARGS__)
+#define FE_5(WHAT, X, ...) WHAT(X)FE_4(WHAT, __VA_ARGS__)
+//... repeat as needed
 
+#define GET_MACRO(_0,_1,_2,_3,_4,_5,NAME,...) NAME
+#define FOR_EACH(action,...) \
+  GET_MACRO(_0,__VA_ARGS__,FE_5,FE_4,FE_3,FE_2,FE_1,FE_0)(action,__VA_ARGS__)
 
-#define CONCATENATE(arg1, arg2)   CONCATENATE1(arg1, arg2)
-#define CONCATENATE1(arg1, arg2)  arg1##arg2
+#define GET_HEAD(Head, ...) Head
+#define GET_TAIL(Head, ...) __VA_ARGS__
 
-#define FOR_EACH_NARG(...) FOR_EACH_NARG_(__VA_ARGS__, FOR_EACH_RSEQ_N())
-#define FOR_EACH_NARG_(...) FOR_EACH_ARG_N(__VA_ARGS__)
-#define FOR_EACH_ARG_N(_1, _2, _3, _4, _5, _6, _7, _8, N, ...) N
-#define FOR_EACH_RSEQ_N() 8, 7, 6, 5, 4, 3, 2, 1, 0
-
-#define FOR_EACH_(N, what, x, ...) CONCATENATE(FOR_EACH_, N)(what, x, __VA_ARGS__)
-#define FOR_EACH(what, x, ...) FOR_EACH_(FOR_EACH_NARG(x, __VA_ARGS__), what, x, __VA_ARGS__)
-
-
-
-
-#define M_UTIL_COMPOSE(FuncName, InternalFuncName1, InternalFuncName2) \
+// Main macros
+#define M_UTIL_COMPOSE(FuncName, ...) \
                                                                        \
-FOR_EACH(M_UTIL_HASFUNCSTRUCT, append, push_back)                      \
-FOR_EACH(M_UTIL_HELPERFUNC, append, push_back)                         \
+FOR_EACH(M_UTIL_HASFUNCSTRUCT, __VA_ARGS__)                            \
+FOR_EACH(M_UTIL_HELPERFUNC, __VA_ARGS__)                               \
                                                                        \
 template <typename Cont, typename T>                                   \
 auto FuncName(Cont& c, const T& t){                                    \
-    if constexpr (M_UTIL_HASFUNC(Cont, InternalFuncName1)){            \
-        return M_UTIL_HELP_F(InternalFuncName1)<Cont, T>(c, t);        \
-    }else if (M_UTIL_HASFUNC(Cont, InternalFuncName2)){                \
-        return M_UTIL_HELP_F(InternalFuncName2)<Cont, T>(c, t);        \
-    }                                                                  \
+    M_UTIL_IF_BRANCH(GET_HEAD(__VA_ARGS__))                            \
+    FOR_EACH(M_UTIL_ELSE_BRANCH, GET_TAIL(__VA_ARGS__) )               \
 }
+
+
+
+#define M_UTIL_IF_BRANCH(Name) \
+if constexpr (M_UTIL_HASFUNC(Cont, Name)){          \
+    return M_UTIL_HELP_F( Name)<Cont, T>(c, t); \
+}
+
+#define M_UTIL_ELSE_BRANCH(Name) \
+else if constexpr (M_UTIL_HASFUNC(Cont, Name)){          \
+    return M_UTIL_HELP_F( Name)<Cont, T>(c, t); \
+}
+
+
+
+#define M_UTIL_HELP_F(FuncName) \
+func_helper_##FuncName
+
+
 
 #endif //META_UTILS_APPEND_H
