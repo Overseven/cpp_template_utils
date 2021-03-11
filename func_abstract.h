@@ -2,11 +2,11 @@
 // Created by Bogdanovskiy on 11.03.2021.
 //
 
-#ifndef META_UTILS_APPEND_H
-#define META_UTILS_APPEND_H
+#ifndef META_UTILS_ABSTRACT_H
+#define META_UTILS_ABSTRACT_H
 
 
-#define M_UTIL_HELPERFUNC(FuncName)                 \
+#define M_UTIL_HELPER_FUNC(FuncName)                \
 template<typename C, typename...Args>               \
 auto func_helper_##FuncName (C& c, Args...args){    \
     return c.FuncName(args...);                     \
@@ -26,7 +26,7 @@ auto func_helper_##FuncName (C& c, Args...args){ \
 }
 
 
-#define M_UTIL_HASFUNCSTRUCT(FuncName)                  \
+#define M_UTIL_HAS_FUNC_STRUCT(FuncName)                \
 template <typename T>                                   \
 class has_##FuncName                                    \
 {                                                       \
@@ -39,10 +39,6 @@ class has_##FuncName                                    \
 public:                                                 \
     enum { value = sizeof(test<T>(0)) == sizeof(char) };\
 };
-
-#define M_UTIL_HASFUNC(ClassName, FuncName) \
-has_##FuncName <ClassName>::value
-
 
 // Make a FOREACH macro
 #define FE_0(WHAT)
@@ -57,13 +53,15 @@ has_##FuncName <ClassName>::value
 #define FOR_EACH(action,...) \
   GET_MACRO(_0,__VA_ARGS__,FE_5,FE_4,FE_3,FE_2,FE_1,FE_0)(action,__VA_ARGS__)
 
+
+
 #define GET_HEAD(Head, ...) Head
 #define GET_TAIL(Head, ...) __VA_ARGS__
 
 // Main macros
 #define M_UTIL_ABSTRACT(FuncName, ...) \
-FOR_EACH(M_UTIL_HASFUNCSTRUCT, __VA_ARGS__)                            \
-FOR_EACH(M_UTIL_HELPERFUNC, __VA_ARGS__)                               \
+  FOR_EACH(M_UTIL_HAS_FUNC_STRUCT, __VA_ARGS__)                        \
+  FOR_EACH(M_UTIL_HELPER_FUNC, __VA_ARGS__)                            \
                                                                        \
 template <typename C, typename...Args>                                 \
 auto FuncName(C& c, Args...args){                                      \
@@ -72,22 +70,22 @@ auto FuncName(C& c, Args...args){                                      \
 }
 
 
-
 #define M_UTIL_IF_BRANCH(Name) \
-if constexpr (M_UTIL_HASFUNC(C, Name)){          \
+if constexpr (M_UTIL_HAS_FUNC(C, Name)){          \
     return M_UTIL_HELP_F( Name)<C, Args...>(c, args...); \
 }
 
 #define M_UTIL_ELSE_BRANCH(Name) \
-else if constexpr (M_UTIL_HASFUNC(C, Name)){          \
+else if constexpr (M_UTIL_HAS_FUNC(C, Name)){          \
     return M_UTIL_HELP_F( Name)<C, Args...>(c, args...); \
 }
 
-
+#define M_UTIL_HAS_FUNC(ClassName, FuncName) \
+has_##FuncName <ClassName>::value
 
 #define M_UTIL_HELP_F(FuncName) \
 func_helper_##FuncName
 
 
 
-#endif //META_UTILS_APPEND_H
+#endif //META_UTILS_ABSTRACT_H
