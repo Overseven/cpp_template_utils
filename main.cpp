@@ -7,6 +7,9 @@ struct A{
         std::cout << __PRETTY_FUNCTION__ << " val: " << a << std::endl;
         val = a;
     }
+    void print(std::string text){
+        std::cout << __FUNCTION__ << " " << text << std::endl;
+    }
 };
 
 struct B{
@@ -16,6 +19,9 @@ struct B{
         val = b;
         return 5.0;
     }
+    void Log(std::string text){
+        std::cout << __FUNCTION__ << " " << text << std::endl;
+    }
 };
 
 struct C{
@@ -23,6 +29,9 @@ struct C{
     void append(const int &c){
         std::cout << __PRETTY_FUNCTION__ << " val: " << c << std::endl;
         val = c;
+    }
+    void log(std::string text){
+        std::cout << __FUNCTION__ << " " << text << std::endl;
     }
 };
 
@@ -33,6 +42,9 @@ struct D{
         val = d;
         return 8.0;
     }
+    void OutMessage(std::string text){
+        std::cout << __FUNCTION__ << " " << text << std::endl;
+    }
 };
 
 struct E{
@@ -42,11 +54,14 @@ struct E{
         val = e;
         return 8.0f;
     }
+    void println(std::string text){
+        std::cout << __FUNCTION__ << " " << text << std::endl;
+    }
 };
 
 M_UTIL_COMPOSE(Append, append, push_back, push)
 
-
+M_UTIL_COMPOSE(Print, print, Log, log, OutMessage, println)
 
 template<typename T>
 void test(T t){
@@ -68,6 +83,12 @@ int main() {
     std::cout << "\na.val: " << a.val << "\nb.val: " << b.val << "\nc.val: " << c.val << "\nd.val: " << d.val << std::endl;
 
     std::cout << "\nb_res: " << b_res << std::endl;
-    std::cout << "\nd_res: " << d_res << std::endl;
+    std::cout << "d_res: " << d_res << std::endl << std::endl;
+
+    Print(a, "a?");
+    Print(b, "b?");
+    Print(c, "c?");
+    Print(d, "d?");
+    Print(e, "e?");
     return 0;
 }
