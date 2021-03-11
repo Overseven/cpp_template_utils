@@ -1,5 +1,6 @@
 #include <iostream>
-#include "append.h"
+#include "func_abstract.h"
+#include <memory>
 
 struct A{
     int val = 0;
@@ -7,15 +8,15 @@ struct A{
         std::cout << __PRETTY_FUNCTION__ << " val: " << a << std::endl;
         val = a;
     }
-    void print(std::string text){
-        std::cout << __FUNCTION__ << " " << text << std::endl;
+    void print(){
+        std::cout << __FUNCTION__ << " without args" << std::endl;
     }
 };
 
 struct B{
     float val = 0;
-    float push_back(const float &b){
-        std::cout << __PRETTY_FUNCTION__ << " val: " << b << std::endl;
+    float push_back(const float &b, int b2){
+        std::cout << __PRETTY_FUNCTION__ << " val: " << b << " second arg: " << b2 << std::endl;
         val = b;
         return 5.0;
     }
@@ -26,9 +27,12 @@ struct B{
 
 struct C{
     int val = 0;
-    void append(const int &c){
-        std::cout << __PRETTY_FUNCTION__ << " val: " << c << std::endl;
-        val = c;
+    void append(int &c){
+        std::cout << __PRETTY_FUNCTION__ << " val: " << val << std::endl;
+//        if (c.get()){
+//            val = *(c.get());
+//            std::cout << " val: " << val << std::endl;
+//        }
     }
     void log(std::string text){
         std::cout << __FUNCTION__ << " " << text << std::endl;
@@ -69,6 +73,7 @@ void test(T t){
 }
 
 
+
 int main() {
     A a;
     B b;
@@ -76,7 +81,8 @@ int main() {
     D d;
     E e;
     Append(a, 11);
-    auto b_res = Append(b, 12.0f);
+    //auto u_ptr = std::make_unique<int>(12);
+    auto b_res = Append(b, 12.0f, 3);
     Append(c, 13);
     auto d_res = Append(d, 14.0);
     Append(e, 24);
@@ -85,7 +91,7 @@ int main() {
     std::cout << "\nb_res: " << b_res << std::endl;
     std::cout << "d_res: " << d_res << std::endl << std::endl;
 
-    Print(a, "a?");
+    Print(a);
     Print(b, "b?");
     Print(c, "c?");
     Print(d, "d?");

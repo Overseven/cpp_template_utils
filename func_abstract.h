@@ -6,22 +6,22 @@
 #define META_UTILS_APPEND_H
 
 
-#define M_UTIL_HELPERFUNC(FuncName)                             \
-template<typename Cont, typename T>                             \
-auto func_helper_##FuncName (Cont& container, const T& val){    \
-    return container.FuncName(val);                             \
+#define M_UTIL_HELPERFUNC(FuncName)                 \
+template<typename C, typename...Args>               \
+auto func_helper_##FuncName (C& c, Args...args){    \
+    return c.FuncName(args...);                     \
 }
 
 #define M_UTIL_HELPERFUNC_WITH_VOID_CHECK(FuncName) \
-template<typename Cont, typename T> \
-auto func_helper_##FuncName (Cont& container, const T& val){ \
-    constexpr bool IsVoid = std::is_void_v<std::invoke_result_t<decltype(&Cont::FuncName), Cont, const T&>>; \
+template<typename C, typename...Args> \
+auto func_helper_##FuncName (C& c, Args...args){ \
+    constexpr bool IsVoid = std::is_void_v<std::invoke_result_t<decltype(&C::FuncName), C, args...>>; \
     if constexpr (IsVoid){ \
         std::cout << #FuncName ". void. val: " << val << std::endl; \
-        container.FuncName(val); \
+        c.FuncName(args...); \
     }else{ \
         std::cout << "func_helper_" #FuncName ". non-void. val: " << val << std::endl; \
-        return container.FuncName(val); \
+        return c.FuncName(args...); \
     } \
 }
 
@@ -62,12 +62,11 @@ has_##FuncName <ClassName>::value
 
 // Main macros
 #define M_UTIL_COMPOSE(FuncName, ...) \
-                                                                       \
 FOR_EACH(M_UTIL_HASFUNCSTRUCT, __VA_ARGS__)                            \
 FOR_EACH(M_UTIL_HELPERFUNC, __VA_ARGS__)                               \
                                                                        \
-template <typename Cont, typename T>                                   \
-auto FuncName(Cont& c, const T& t){                                    \
+template <typename C, typename...Args>                                   \
+auto FuncName(C& c, Args...args){                                    \
     M_UTIL_IF_BRANCH(GET_HEAD(__VA_ARGS__))                            \
     FOR_EACH(M_UTIL_ELSE_BRANCH, GET_TAIL(__VA_ARGS__) )               \
 }
@@ -75,13 +74,13 @@ auto FuncName(Cont& c, const T& t){                                    \
 
 
 #define M_UTIL_IF_BRANCH(Name) \
-if constexpr (M_UTIL_HASFUNC(Cont, Name)){          \
-    return M_UTIL_HELP_F( Name)<Cont, T>(c, t); \
+if constexpr (M_UTIL_HASFUNC(C, Name)){          \
+    return M_UTIL_HELP_F( Name)<C, Args...>(c, args...); \
 }
 
 #define M_UTIL_ELSE_BRANCH(Name) \
-else if constexpr (M_UTIL_HASFUNC(Cont, Name)){          \
-    return M_UTIL_HELP_F( Name)<Cont, T>(c, t); \
+else if constexpr (M_UTIL_HASFUNC(C, Name)){          \
+    return M_UTIL_HELP_F( Name)<C, Args...>(c, args...); \
 }
 
 
