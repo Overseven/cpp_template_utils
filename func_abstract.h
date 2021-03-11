@@ -65,8 +65,8 @@ has_##FuncName <ClassName>::value
 FOR_EACH(M_UTIL_HASFUNCSTRUCT, __VA_ARGS__)                            \
 FOR_EACH(M_UTIL_HELPERFUNC, __VA_ARGS__)                               \
                                                                        \
-template <typename C, typename...Args>                                   \
-auto FuncName(C& c, Args...args){                                    \
+template <typename C, typename...Args>                                 \
+auto FuncName(C& c, Args...args){                                      \
     M_UTIL_IF_BRANCH(GET_HEAD(__VA_ARGS__))                            \
     FOR_EACH(M_UTIL_ELSE_BRANCH, GET_TAIL(__VA_ARGS__) )               \
 }
