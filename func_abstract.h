@@ -4,88 +4,67 @@
 
 #ifndef META_UTILS_ABSTRACT_H
 #define META_UTILS_ABSTRACT_H
+#include "common.h"
 
-
-#define M_UTIL_HELPER_FUNC(FuncName)                \
-template<typename C, typename...Args>               \
-auto func_helper_##FuncName (C& c, Args...args){    \
-    return c.FuncName(args...);                     \
-}
-
-#define M_UTIL_HELPERFUNC_WITH_VOID_CHECK(FuncName) \
-template<typename C, typename...Args> \
-auto func_helper_##FuncName (C& c, Args...args){ \
-    constexpr bool IsVoid = std::is_void_v<std::invoke_result_t<decltype(&C::FuncName), C, args...>>; \
-    if constexpr (IsVoid){ \
-        std::cout << #FuncName ". void. val: " << val << std::endl; \
-        c.FuncName(args...); \
-    }else{ \
-        std::cout << "func_helper_" #FuncName ". non-void. val: " << val << std::endl; \
-        return c.FuncName(args...); \
-    } \
-}
-
-
-#define M_UTIL_HAS_FUNC_STRUCT(FuncName)                \
+#define UTIL_ABSTRACT_HAS_FUNC_STRUCT(FuncName)         \
 template <typename T>                                   \
 class has_##FuncName                                    \
 {                                                       \
     typedef char one;                                   \
     struct two { char x[2]; };                          \
     template <typename C>                               \
-    static one test( decltype(&C::FuncName) ) {}        \
+    static one test( decltype(&C::FuncName) ){          \
+        return one{};                                   \
+    }                                                   \
+                                                        \
     template <typename C>                               \
-    static two test(...){}                              \
+    static two test(...){                               \
+        return two{};                                   \
+    }                                                   \
 public:                                                 \
     enum { value = sizeof(test<T>(0)) == sizeof(char) };\
 };
 
-// Make a FOREACH macro
-#define FE_0(WHAT)
-#define FE_1(WHAT, X) WHAT(X)
-#define FE_2(WHAT, X, ...) WHAT(X)FE_1(WHAT, __VA_ARGS__)
-#define FE_3(WHAT, X, ...) WHAT(X)FE_2(WHAT, __VA_ARGS__)
-#define FE_4(WHAT, X, ...) WHAT(X)FE_3(WHAT, __VA_ARGS__)
-#define FE_5(WHAT, X, ...) WHAT(X)FE_4(WHAT, __VA_ARGS__)
-//... repeat as needed
 
-#define GET_MACRO(_0,_1,_2,_3,_4,_5,NAME,...) NAME
-#define FOR_EACH(action,...) \
-  GET_MACRO(_0,__VA_ARGS__,FE_5,FE_4,FE_3,FE_2,FE_1,FE_0)(action,__VA_ARGS__)
+#define UTIL_HELPER_FUNC(FuncName)                      \
+template<typename Class, typename...Args>               \
+auto func_helper_##FuncName (Class& c, Args&&...args){  \
+    return c.FuncName(std::forward<Args>(args)...);     \
+}
 
-
-
-#define GET_HEAD(Head, ...) Head
-#define GET_TAIL(Head, ...) __VA_ARGS__
 
 // Main macros
-#define M_UTIL_ABSTRACT(FuncName, ...) \
-  FOR_EACH(M_UTIL_HAS_FUNC_STRUCT, __VA_ARGS__)                        \
-  FOR_EACH(M_UTIL_HELPER_FUNC, __VA_ARGS__)                            \
-                                                                       \
-template <typename C, typename...Args>                                 \
-auto FuncName(C& c, Args...args){                                      \
-    M_UTIL_IF_BRANCH(GET_HEAD(__VA_ARGS__))                            \
-    FOR_EACH(M_UTIL_ELSE_BRANCH, GET_TAIL(__VA_ARGS__) )               \
+template<class ...>
+typename std::false_type always_false{};
+
+#define UTIL_ABSTRACT(FuncName, ...)                                  \
+  FOR_EACH(UTIL_ABSTRACT_HAS_FUNC_STRUCT, __VA_ARGS__)                \
+  FOR_EACH(UTIL_HELPER_FUNC, __VA_ARGS__)                             \
+                                                                      \
+template <typename Class, typename...Args>                            \
+auto FuncName(Class& c, Args&&...args){                               \
+    UTIL_ABSTRACT_IF_BRANCH(GET_HEAD(__VA_ARGS__))                    \
+    FOR_EACH(UTIL_ABSTRACT_ELSE_BRANCH, GET_TAIL(__VA_ARGS__) )       \
+    else{                                                             \
+        static_assert(always_false<Class>, "No one suitable "         \
+        "function is found!");                                        \
+    }                                                                 \
 }
 
 
-#define M_UTIL_IF_BRANCH(Name) \
-if constexpr (M_UTIL_HAS_FUNC(C, Name)){          \
-    return M_UTIL_HELP_F( Name)<C, Args...>(c, args...); \
+#define UTIL_ABSTRACT_IF_BRANCH(Name)                   \
+if constexpr (UTIL_ABSTRACT_HAS_FUNC(Class, Name)){     \
+    return c.Name(std::forward<Args>(args)...);         \
 }
 
-#define M_UTIL_ELSE_BRANCH(Name) \
-else if constexpr (M_UTIL_HAS_FUNC(C, Name)){          \
-    return M_UTIL_HELP_F( Name)<C, Args...>(c, args...); \
+
+#define UTIL_ABSTRACT_ELSE_BRANCH(Name)                     \
+else if constexpr (UTIL_ABSTRACT_HAS_FUNC(Class, Name)){    \
+    return c.Name(std::forward<Args>(args)...);             \
 }
 
-#define M_UTIL_HAS_FUNC(ClassName, FuncName) \
+#define UTIL_ABSTRACT_HAS_FUNC(ClassName, FuncName) \
 has_##FuncName <ClassName>::value
-
-#define M_UTIL_HELP_F(FuncName) \
-func_helper_##FuncName
-
 
 
 #endif //META_UTILS_ABSTRACT_H
