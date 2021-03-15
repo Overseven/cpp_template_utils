@@ -1,7 +1,7 @@
 # cpp_template_utils
 Header-only compile-time templates.
 
-##Contents
+## Contents
 - [Abstraction](#abstraction)
 - [Alias](#alias)
 - [Examples of substitution](#examples-of-substitution)
@@ -63,7 +63,7 @@ B::Log() b?
 C::OutMessage() c? second arg: 112
 ````
 
-##Alias
+## Alias
 The alias utility has two macros:
 
 1. ``UTIL_ALIAS_SIGNATURE_PACK(SignPackName, ReturnType, ArgType1, ArgType2, ...)``
@@ -101,9 +101,10 @@ struct AliasTest2{
     }
 };
 
-
+// This macro creates aliases for return and input arguments types
 UTIL_ALIAS_SIGNATURE_PACK(A, int, const float&, int&)
 
+// This macro creates aliases for function fooTest1, fooTest2 with signature, described in signature pack A
 UTIL_ALIAS(MyAlias, A, fooTest1, fooTest2)
 
 
@@ -112,7 +113,7 @@ int main(){
     AliasTest2 b;
 
     int value = 3;
-
+    // Using the new function
     auto result1 = MyAlias(a, 10.5f, value);
     auto result2 = MyAlias(b, 14.1f, value);
 
@@ -132,13 +133,13 @@ value: 777
 ````
 
 
-##Examples of substitution
+## Examples of substitution
 
 For get more detail of created templates, 
 this section presents examples of code after macros substitution.
 
 
-###Abstraction macros substitution
+### Abstraction macros substitution
 Macro:
 ```c++
 UTIL_ABSTRACT(PrintFunction, print, Log, OutMessage)
@@ -206,7 +207,7 @@ auto PrintFunction(Class &c, Args &&...args) {
 }
 ```
 
-###Alias macros substitution
+### Alias macros substitution
 Macros:
 ```c++
 UTIL_ALIAS_SIGNATURE_PACK(A, int, const float&, int&)
