@@ -1,7 +1,7 @@
 # cpp_template_utils
 Header-only compile-time templates.
 
-# Contents
+## Contents
 - [Abstraction](#abstraction)
 - [Alias](#alias)
 - [Examples of substitution](#examples-of-substitution)
@@ -9,14 +9,14 @@ Header-only compile-time templates.
   - [Alias macros substitution](#alias-macros-substitution)
 
 
-# Abstraction
+## Abstraction
 The abstraction utility has one macro:
 - ``UTIL_ABSTRACT(AbstrName, FuncName1, FuncName2, ...)`` 
   
 Which creates template function with ``AbstrName`` name, 
 which abstracts class member functions with one of the name ``FuncName1, FuncName2, ...``, ***without strong conformance of signature***.  
 
-## Example
+### Example
 ```c++
 #include <iostream>
 #include "func_abstract.h"
@@ -63,7 +63,7 @@ B::Log() b?
 C::OutMessage() c? second arg: 112
 ````
 
-#Alias
+## Alias
 The alias utility has two macros:
 
 1. ``UTIL_ALIAS_SIGNATURE_PACK(SignPackName, ReturnType, ArgType1, ArgType2, ...)``
@@ -79,7 +79,7 @@ The second macro creates template function with ``AliasName`` name,
 which abstracts class member functions with one of the names ``FuncName1, FuncName2, ...``
 ***with strong conformance of signature***, but with variations of ***const*** function tag existence.
 
-## Example
+### Example
 
 ```c++
 #include "func_alias.h"
@@ -132,13 +132,13 @@ value: 777
 ````
 
 
-#Examples of substitution
+## Examples of substitution
 
 For get more detail of created templates, 
 this section presents examples of code after macros substitution.
 
 
-##Abstraction macros substitution
+### Abstraction macros substitution
 Macro:
 ```c++
 UTIL_ABSTRACT(PrintFunction, print, Log, OutMessage)
@@ -206,7 +206,7 @@ auto PrintFunction(Class &c, Args &&...args) {
 }
 ```
 
-##Alias macros substitution
+### Alias macros substitution
 Macros:
 ```c++
 UTIL_ALIAS_SIGNATURE_PACK(A, int, const float&, int&)
