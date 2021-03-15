@@ -282,7 +282,7 @@ template<class Class, typename...Args>
 struct Internal_MyAlias<Class, Return_A, TypeList<Args...>> {
     template<class...> static constexpr std::false_type always_false{};
     
-    Return_A call(Class &c, Args &&...args) {
+    static Return_A call(Class &c, Args &&...args) {
         if constexpr(alias_has_fooTest1<Class, Return_A, Args_A>::value) {
             return c.fooTest1(std::forward<Args>(args)...);
         
@@ -297,6 +297,6 @@ struct Internal_MyAlias<Class, Return_A, TypeList<Args...>> {
 
 template<class Class, typename...Args>
 Return_A MyAlias(Class &c, Args &&...args) {
-    return Internal_MyAlias<Class, Return_A, Args_A>{}.call(c, std::forward<Args>(args)...);
+    return Internal_MyAlias<Class, Return_A, Args_A>::call(c, std::forward<Args>(args)...);
 }
 ```
