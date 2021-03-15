@@ -57,7 +57,7 @@ template<class Class, typename...Args>                                          
 struct Internal_##Alias<Class, Return_##PackName, TypeList<Args...>>{           \
     template<class ...>                                                         \
     static constexpr std::false_type always_false{};                            \
-    Return_##PackName call(Class &c, Args&&...args) {                           \
+    static Return_##PackName call(Class &c, Args&&...args) {                    \
         ALIAS_IF_BRANCH(PackName, GET_HEAD(__VA_ARGS__))                        \
         FOR_EACH_2(ALIAS_ELSE_BRANCH, PackName, 0, GET_TAIL(__VA_ARGS__) )      \
         else{                                                                   \
@@ -70,7 +70,7 @@ struct Internal_##Alias<Class, Return_##PackName, TypeList<Args...>>{           
 template<class Class, typename ...Args>                                         \
 Return_##PackName Alias(Class &c, Args&&...args) {                              \
     return Internal_##Alias<Class, Return_##PackName,                           \
-    Args_##PackName>{}.call(c, std::forward<Args>(args)...);                    \
+    Args_##PackName>::call(c, std::forward<Args>(args)...);                     \
 }
 
 
