@@ -101,9 +101,10 @@ struct AliasTest2{
     }
 };
 
-
+// This macro creates aliases for return and input arguments types
 UTIL_ALIAS_SIGNATURE_PACK(A, int, const float&, int&)
 
+// This macro creates aliases for function fooTest1, fooTest2 with signature, described in signature pack A
 UTIL_ALIAS(MyAlias, A, fooTest1, fooTest2)
 
 
@@ -112,7 +113,7 @@ int main(){
     AliasTest2 b;
 
     int value = 3;
-
+    // Using the new function
     auto result1 = MyAlias(a, 10.5f, value);
     auto result2 = MyAlias(b, 14.1f, value);
 
