@@ -1,5 +1,5 @@
 //
-// Created by Bogdanovskiy on 11.03.2021.
+// Created by overseven on 11.03.2021.
 //
 
 #ifndef META_UTILS_ABSTRACT_H
@@ -26,20 +26,12 @@ public:                                                 \
 };
 
 
-#define UTIL_HELPER_FUNC(FuncName)                      \
-template<typename Class, typename...Args>               \
-auto func_helper_##FuncName (Class& c, Args&&...args){  \
-    return c.FuncName(std::forward<Args>(args)...);     \
-}
-
-
 // Main macros
 template<class ...>
 typename std::false_type always_false{};
 
 #define UTIL_ABSTRACT(FuncName, ...)                                  \
   FOR_EACH(UTIL_ABSTRACT_HAS_FUNC_STRUCT, __VA_ARGS__)                \
-  FOR_EACH(UTIL_HELPER_FUNC, __VA_ARGS__)                             \
                                                                       \
 template <typename Class, typename...Args>                            \
 auto FuncName(Class& c, Args&&...args){                               \

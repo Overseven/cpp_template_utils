@@ -7,7 +7,7 @@
 
 #include "common.h"
 
-#define ALIAS_SIGNATURE_PACK(PackName, ReturnType, ...) \
+#define UTIL_ALIAS_SIGNATURE_PACK(PackName, ReturnType, ...) \
 using Return_##PackName = ReturnType;                   \
 using Args_##PackName = TypeList<__VA_ARGS__>;
 
@@ -45,7 +45,7 @@ enum { value = sizeof(test<Class>(0)) == sizeof(one) };             \
 
 
 
-#define ALIAS_FUNC(Alias, PackName, ...)                                        \
+#define UTIL_ALIAS(Alias, PackName, ...)                                        \
 FOR_EACH(ALIAS_HAS_FUNC_STRUCT, __VA_ARGS__)                                    \
                                                                                 \
 template<class Class, typename Return, typename...Args>                         \

@@ -63,15 +63,10 @@ struct E{
     }
 };
 
-UTIL_ABSTRACT(Append, append, push_back, push)
 
+UTIL_ABSTRACT(MyAbstraction, append, push_back, push)
 
-
-template<typename T>
-void test(T t){
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
-}
-
+UTIL_ABSTRACT(PrintFunction, print, Log, OutMessage)
 
 
 void abstract() {
@@ -80,11 +75,11 @@ void abstract() {
     C c;
     D d;
     E e;
-    Append(a, 11);
-    auto b_res = Append(b, 12.0f, 3);
-    Append(c, 13);
-    auto d_res = Append(d, 14.0);
-    Append(e, 24);
+    MyAbstraction(a, 11);
+    auto b_res = MyAbstraction(b, 12.0f, 3);
+    MyAbstraction(c, 13);
+    auto d_res = MyAbstraction(d, 14.0);
+    MyAbstraction(e, 24);
     std::cout << "\na.val: " << a.val << "\nb.val: " << b.val << "\nc.val: " << c.val << "\nd.val: " << d.val << std::endl;
 
     std::cout << "\nb_res: " << b_res << std::endl;
