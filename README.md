@@ -243,9 +243,7 @@ class alias_has_fooTest1<Class, Return, TypeList<Args...>> {
     template<typename C>
     static two test(...) { return two(); }
 public:
-    enum {
-    value = sizeof(test<Class>(0)) == sizeof(one)
-    };
+    enum { value = sizeof(test<Class>(0)) == sizeof(one) };
 };
 
 template<typename Class, typename Return, typename...T>
